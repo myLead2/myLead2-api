@@ -20,9 +20,9 @@ function createUser(req, res) {
           });
         } else {
           res.json({
-            "status": "seccess",
+            "status": "success",
             "data": enterprise,
-            "message": "email já cadastrado na base de dados"
+            "message": "Usuário cadastrado com sucesso"
           });
         }
       });
@@ -51,9 +51,9 @@ function getSingleUser(req, res) {
       });
     } else {
       res.json({
-        "status": "seccess",
+        "status": "success",
         "data": enterprise,
-        "message": "email já cadastrado na base de dados"
+        "message": "Usuario encontrado com sucesso"
       });
     }
   });
