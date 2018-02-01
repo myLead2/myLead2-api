@@ -7,39 +7,46 @@ const mongoose = require('mongoose'),
 function createUser(req, res) {
 
   let newEnterprise = new Enterprise(req.body);
+
   Enterprise.findOne({
-    'email': req.body.email.toString()
+    'email': newEnterprise.email.toString()
   }, function (err, enterprise) {
     if (err) {
-      newEnterprise.save(function (err, enterprise) {
-        if (err) {
-          res.json({
-            "status": "error",
-            "data": {},
-            "message": "erro inesperado"
-          });
-        } else {
-          res.json({
-            "status": "success",
-            "data": enterprise,
-            "message": "Usuário cadastrado com sucesso"
-          });
-        }
-      });
-    } else {
       res.json({
         "status": "error",
         "data": {},
-        "message": "email já cadastrado na base de dados"
+        "message": "erro inesperado"
       });
+    } else {
+      if(enterprise){
+        res.json({
+          "status": "error",
+          "data": {},
+          "message": "Email já cadastrado"
+        });
+      }else{
+        newEnterprise.save(function (err, enterprise) {
+          if (err) {
+            res.json({
+              "status": "error",
+              "data": {},
+              "message": "erro inesperado"
+            });
+          } else {
+            res.json({
+              "status": "success",
+              "data": enterprise,
+              "message": "Usuário cadastrado com sucesso"
+            });
+          }
+        });
+      }
     }
   });
-
 };
 
 
 function getSingleUser(req, res) {
-  console.log(req.params.email_usuario);
   Enterprise.findOne({
     'email': req.params.email.toString()
   }, function (err, enterprise) {
@@ -47,14 +54,23 @@ function getSingleUser(req, res) {
       res.json({
         "status": "error",
         "data": {},
-        "message": "email já cadastrado na base de dados"
+        "message": "erro inesperado"
       });
     } else {
-      res.json({
-        "status": "success",
-        "data": enterprise,
-        "message": "Usuario encontrado com sucesso"
-      });
+      if(enterprise){
+        res.json({
+          "status": "success",
+          "data": enterprise,
+          "message": "Usuario encontrado com sucesso"
+        });
+      }else{
+        res.json({
+          "status": "error",
+          "data": {},
+          "message": "Usuario não encontrado"
+        });
+      }
+      
     }
   });
 };
