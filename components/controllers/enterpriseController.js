@@ -1,5 +1,5 @@
 'use strict';
-
+const md5 = require('md5');
 const mongoose = require('mongoose'),
   Enterprise = mongoose.model('Enterprise');
 
@@ -7,7 +7,7 @@ const mongoose = require('mongoose'),
 function createUser(req, res) {
 
   let newEnterprise = new Enterprise(req.body);
-
+  newEnterprise.senha = md5(newEnterprise.senha);
   Enterprise.findOne({
     'email': newEnterprise.email.toString()
   }, function (err, enterprise) {
@@ -45,6 +45,35 @@ function createUser(req, res) {
   });
 };
 
+function login(req, res) {
+    
+    Enterprise.findOne({
+      'email': req.body.email.toString(),
+      'senha': md5(req.body.senha)
+    }, function (err, enterprise) {
+      if (err) {
+        res.json({
+          "status": "error",
+          "data": {},
+          "message": "erro inesperado"
+        });
+      } else {
+        if(enterprise){
+          res.json({
+            "status": "success",
+            "data": {"name": enterprise.name, "email":enterprise.email,"id":enterprise._id},
+            "message": "Usuário logado com sucesso"
+          });
+        }else{
+          res.json({
+            "status": "error",
+            "data": {},
+            "message": "Usuário não encontrado"
+          });
+        }
+      }
+    });
+  };
 
 function getSingleUser(req, res) {
   Enterprise.findOne({
@@ -78,5 +107,5 @@ function getSingleUser(req, res) {
 module.exports = {
   getSingleUser: getSingleUser,
   createUser: createUser,
-  // login: login,
+  login: login,
 };
