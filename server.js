@@ -1,32 +1,30 @@
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const enterpriseModel = require('./components/models/enterpriseModel');
 const enterpriseRoutets = require('./components/routes/enterpriseRoutes');
-//const multer = require('multer');
+const multer = require('multer');
 const cors = require('cors')
+const fs = require('fs');
 
 const app = express();
 
 //UPLOAD
-//let DIR = './uploads/';
-//let upload = multer({dest: DIR});
+let DIR = 'uploads/'
+let upload = multer({ dest: DIR });
 
 
 //CORS V02
 app.use(cors())
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://mylead_mongo:mylead_mongo@ds127436.mlab.com:27436/heroku_mmlfwqpn'); 
-
+mongoose.connect('mongodb://mylead_mongo:mylead_mongo@ds127436.mlab.com:27436/heroku_mmlfwqpn');
 
 // uncomment after placing your favicon in /public
 app.use(logger('dev'));
@@ -34,32 +32,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
- 
-// app.set(multer({
-//   dest: DIR,
-//   rename: function (fieldname, filename) {
-//     return filename + Date.now();
-//   },
-//   onFileUploadStart: function (file) {
-//     console.log(file.originalname + ' is starting ...');
-//   },
-//   onFileUploadComplete: function (file) {
-//     console.log(file.fieldname + ' uploaded to  ' + file.path);
-//   }
-// }).single('singleInputFileName'));
 
+app.post('/api/upload', upload.single('csvsendfile'), function (req, res, next) {
+  console.log('123');
+  /** When using the "single"
+      data come in "req.file" regardless of the attribute "name". **/
+  var tmp_path = req.file.path;
 
+  /** The original name of the uploaded file
+      stored in the variable "originalname". **/
+  var target_path = 'uploads/' + req.file.originalname;
 
-var corsOptions = {
-  origin: 'http://localhost:4200',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
-app.post('/api/upload', function (req, res) {
-  console.log(req.body);
-  return true;
+  /** A better way to copy the uploaded file. **/
+  var src = fs.createReadStream(tmp_path);
+  var dest = fs.createWriteStream(target_path);
+  src.pipe(dest);
+  src.on('end', function () { res.send('complete'); });
+  src.on('error', function (err) { res.send('error'); });
 });
-
-app.use(cookieParser());
 
 app.use('/', enterpriseRoutets);
 
