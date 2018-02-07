@@ -61,7 +61,7 @@ function login(req, res) {
         if(enterprise){
           res.json({
             "status": "success",
-            "data": {"name": enterprise.name, "email":enterprise.email,"id":enterprise._id},
+            "data": {"name": enterprise.nameEnterprise, "email":enterprise.email,"id":enterprise._id},
             "message": "Usuário logado com sucesso"
           });
         }else{
