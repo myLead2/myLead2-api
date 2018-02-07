@@ -1,16 +1,19 @@
 const express = require('express');
 const path = require('path');
-const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const enterpriseModel = require('./components/models/enterpriseModel');
 const enterpriseRoutets = require('./components/routes/enterpriseRoutes');
-
+const multer = require('multer');
 const cors = require('cors')
 
 const app = express();
+
+//UPLOAD
+let DIR = './uploads/';
+let upload = multer({dest: DIR});
 
 
 //CORS V02
@@ -31,6 +34,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+ 
+app.set(multer({
+  dest: DIR,
+  rename: function (fieldname, filename) {
+    return filename + Date.now();
+  },
+  onFileUploadStart: function (file) {
+    console.log(file.originalname + ' is starting ...');
+  },
+  onFileUploadComplete: function (file) {
+    console.log(file.fieldname + ' uploaded to  ' + file.path);
+  }
+}).single('singleInputFileName'));
+
+app.post('/api/upload', function (req, res) {
+  console.log(req.body);
+  return true;
+});
 
 app.use(cookieParser());
 
