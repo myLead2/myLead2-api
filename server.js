@@ -12,8 +12,9 @@ const fs = require('fs');
 const app = express();
 
 //UPLOAD
-let DIR = 'uploads/'
+let DIR = 'public/uploads/'
 let upload = multer({ dest: DIR });
+app.use(express.static(path.join(__dirname, './public')));
 
 
 //CORS V02
@@ -34,31 +35,31 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.post('/api/upload', upload.single('csvsendfile'), function (req, res, next) {
-  console.log('123');
   /** When using the "single"
       data come in "req.file" regardless of the attribute "name". **/
   var tmp_path = req.file.path;
 
   /** The original name of the uploaded file
       stored in the variable "originalname". **/
-  var target_path = 'uploads/' + req.file.originalname;
+  var target_path = DIR + req.file.originalname + '__' + Date.now();
 
   /** A better way to copy the uploaded file. **/
   var src = fs.createReadStream(tmp_path);
   var dest = fs.createWriteStream(target_path);
+  
   src.pipe(dest);
-  src.on('end', function () { res.send('complete'); });
+  src.on('end', function () { res.json({'status': 'sucess', 'url_file': path.join(__dirname,target_path)}); });
   src.on('error', function (err) { res.send('error'); });
 });
 
 app.use('/', enterpriseRoutets);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// app.use(function (req, res, next) {
+//   var err = new Error('Not Found');
+//   err.status = 404;
+//   next(err);
+// });
 
 // error handler
 app.use(function (err, req, res, next) {
