@@ -7,8 +7,8 @@ var RequestModel = new Schema({
   id_user: {
     type: String
   },
-  url_file:{
-    type: String
+  json_file:{
+    type: JSON
   },
   status: {
     type: Boolean

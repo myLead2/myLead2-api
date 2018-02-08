@@ -15,7 +15,9 @@ const app = express();
 
 //UPLOAD
 let DIR = 'public/uploads/'
-let upload = multer({ dest: DIR });
+let storage = multer.memoryStorage();
+let upload = multer({ storage: storage});
+
 app.use(express.static(path.join(__dirname, './public')));
 
 
