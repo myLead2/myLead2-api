@@ -5,9 +5,11 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const enterpriseModel = require('./components/models/enterpriseModel');
 const enterpriseRoutets = require('./components/routes/enterpriseRoutes');
+const requestModel = require('./components/models/requestModel');
+const requestRoutes = require('./components/routes/requestRoutes');
+
 const multer = require('multer');
 const cors = require('cors')
-const fs = require('fs');
 
 const app = express();
 
@@ -34,25 +36,10 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-app.post('/api/upload', upload.single('csvsendfile'), function (req, res, next) {
-  /** When using the "single"
-      data come in "req.file" regardless of the attribute "name". **/
-  var tmp_path = req.file.path;
 
-  /** The original name of the uploaded file
-      stored in the variable "originalname". **/
-  var target_path = DIR + req.file.originalname + '__' + Date.now();
-
-  /** A better way to copy the uploaded file. **/
-  var src = fs.createReadStream(tmp_path);
-  var dest = fs.createWriteStream(target_path);
-  
-  src.pipe(dest);
-  src.on('end', function () { res.json({'status': 'sucess', 'url_file': path.join(__dirname,target_path)}); });
-  src.on('error', function (err) { res.send('error'); });
-});
-
+app.use('/', requestRoutes);
 app.use('/', enterpriseRoutets);
+
 
 // catch 404 and forward to error handler
 // app.use(function (req, res, next) {

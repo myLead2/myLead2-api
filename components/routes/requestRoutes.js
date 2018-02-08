@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const enterprise = require('../controllers/enterpriseController');
+const request = require('../controllers/requestController');
+const multer = require('multer');
+const DIR = 'public/uploads/'
+const upload = multer({ dest: DIR });
 
 /* GET users listing. */
-router.get('/api/enterprise/:email', enterprise.getSingleUser);
-router.post('/api/enterprise/login/', enterprise.login);
-router.post('/api/enterprise', enterprise.createUser);
-
+router.post('/api/upload', upload.single('csvsendfile'), request.upload);
 module.exports = router;

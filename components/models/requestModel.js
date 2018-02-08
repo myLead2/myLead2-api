@@ -3,12 +3,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 
-var Request = new Schema({
+var RequestModel = new Schema({
   id_user: {
     type: String
   },
-  json:{
-    type: JSON
+  url_file:{
+    type: String
   },
   status: {
     type: Boolean
@@ -19,4 +19,4 @@ var Request = new Schema({
   }
 );
 
-module.exports = mongoose.model('Request', Request;);
+module.exports = mongoose.model('Request', RequestModel);
