@@ -1,15 +1,18 @@
 'use strict';
 const csv = require('csvtojson')
+const request = require('request');
+const needle = require('needle');
+const http = require('http');
 const fs = require('fs');
 const mailer = require('./../../mailer/mailer');
 const mongoose = require('mongoose'),
     Request = mongoose.model('Request'),
     Enterprise = mongoose.model('Enterprise');
 
+const URL_API_ML = 'http://127.0.0.1:5000/data/cleaning';
 
 function upload(req, res) {
     let id_user = req.url.split('?')[1].split('=')[1];
-
     let file = req.file.buffer.toString();
 
     //console.log(file);
@@ -34,7 +37,21 @@ function upload(req, res) {
         'status': false
     });
 
-    newRequest.save();
+    newRequest.save().then(function (res) {
+
+        needle.request('post', URL_API_ML, res, {
+            json: true
+        }, function (err, resp) {
+            if (!err) {
+                console.log('send to api');
+            }
+    
+            if (err) {
+                console.log('neddle error');
+            }
+        })
+
+    });
 
     Enterprise.findById(id_user, function (err, enterprise) {
         if (enterprise) {
