@@ -18,13 +18,13 @@ function createUser(req, res) {
         "message": "erro inesperado"
       });
     } else {
-      if(enterprise){
+      if (enterprise) {
         res.json({
           "status": "error",
           "data": {},
           "message": "Email já cadastrado"
         });
-      }else{
+      } else {
         newEnterprise.save(function (err, enterprise) {
           if (err) {
             res.json({
@@ -46,34 +46,38 @@ function createUser(req, res) {
 };
 
 function login(req, res) {
-    
-    Enterprise.findOne({
-      'email': req.body.email.toString(),
-      'senha': md5(req.body.senha)
-    }, function (err, enterprise) {
-      if (err) {
+
+  Enterprise.findOne({
+    'email': req.body.email.toString(),
+    'senha': md5(req.body.senha)
+  }, function (err, enterprise) {
+    if (err) {
+      res.json({
+        "status": "error",
+        "data": {},
+        "message": "erro inesperado"
+      });
+    } else {
+      if (enterprise) {
+        res.json({
+          "status": "success",
+          "data": {
+            "name": enterprise.nameEnterprise,
+            "email": enterprise.email,
+            "id": enterprise._id
+          },
+          "message": "Usuário logado com sucesso"
+        });
+      } else {
         res.json({
           "status": "error",
           "data": {},
-          "message": "erro inesperado"
+          "message": "Usuário não encontrado"
         });
-      } else {
-        if(enterprise){
-          res.json({
-            "status": "success",
-            "data": {"name": enterprise.nameEnterprise, "email":enterprise.email,"id":enterprise._id},
-            "message": "Usuário logado com sucesso"
-          });
-        }else{
-          res.json({
-            "status": "error",
-            "data": {},
-            "message": "Usuário não encontrado"
-          });
-        }
       }
-    });
-  };
+    }
+  });
+};
 
 function getSingleUser(req, res) {
   Enterprise.findOne({
@@ -86,26 +90,31 @@ function getSingleUser(req, res) {
         "message": "erro inesperado"
       });
     } else {
-      if(enterprise){
+      if (enterprise) {
         res.json({
           "status": "success",
           "data": enterprise,
           "message": "Usuario encontrado com sucesso"
         });
-      }else{
+      } else {
         res.json({
           "status": "error",
           "data": {},
           "message": "Usuario não encontrado"
         });
       }
-      
     }
   });
 };
+
+
+function getData(req, res, next) {
+  // const number_request = request.getData();
+}
 
 module.exports = {
   getSingleUser: getSingleUser,
   createUser: createUser,
   login: login,
+  getData: getData
 };

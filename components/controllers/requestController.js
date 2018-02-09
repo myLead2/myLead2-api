@@ -1,18 +1,23 @@
 'use strict';
 const csv = require('csvtojson')
 const fs = require('fs');
+const mailer = require('./../../mailer/mailer');
 const mongoose = require('mongoose'),
-    Request = mongoose.model('Request');
+    Request = mongoose.model('Request'),
+    Enterprise = mongoose.model('Enterprise');
 
 
 function upload(req, res) {
     let id_user = req.url.split('?')[1].split('=')[1];
+
     let file = req.file.buffer.toString();
 
     //console.log(file);
     let data = [];
 
-    csv({ flatKeys: true })
+    csv({
+            flatKeys: true
+        })
         .fromString(file)
         .on('json', (jsonObj) => {
             data.push(jsonObj);
@@ -23,32 +28,48 @@ function upload(req, res) {
 
     let newRequest = new Request({
         'id_user': id_user,
-        'json_file': { 'data': data },
+        'json_file': {
+            'data': data
+        },
         'status': false
     });
 
     newRequest.save();
 
+    Enterprise.findById(id_user, function (err, enterprise) {
+        if (enterprise) {
+            mailer.notificationUpload(enterprise.nameEnterprise, enterprise.email);
+        }
+    })
+
+
     res.json({
         'status': 'sucess',
         'json_file_id': newRequest._id
     });
-
-
-    //let src = fs.createReadStream(tmp_path);
-    //let dest = fs.createWriteStream(target_path);
-
-    // src.pipe(dest);
-    // src.on('end', function () {
-
-    // });
-    // src.on('error', function (err) {
-    //     res.send('error');
-    // });
 };
 
+function getData(req, res, next) {
+    Request.aggregate([{
+        $group: {
+            '_id': req.body.id,
+            'count': {
+                '$sum': 1
+            }
+        }
+    }], function (err, result) {
+        if (err) {
+            next(err);
+        } else {
+            res.json({
+                'result': result
+            });
+        }
+    });
 
+}
 
 module.exports = {
-    upload: upload
+    upload: upload,
+    getData: getData
 };
