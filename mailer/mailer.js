@@ -90,7 +90,6 @@ function notificationUpload(name, email) {
     });
 }
 
-
 /*
     Envia email avisando que o arquivo foi analisado
 */
@@ -176,8 +175,6 @@ function notificationAnalityc(name, email) {
         console.log('E-mail enviado!');
     });
 }
-
-
 
 module.exports = {
     notificationUpload: notificationUpload,

@@ -1,8 +1,6 @@
 'use strict';
 const csv = require('csvtojson')
-const request = require('request');
 const needle = require('needle');
-const http = require('http');
 const fs = require('fs');
 const mailer = require('./../../mailer/mailer');
 const mongoose = require('mongoose'),
@@ -38,14 +36,13 @@ function upload(req, res) {
     });
 
     newRequest.save().then(function (res) {
-
-        needle.request('post', URL_API_ML, res, {
+        console.log('Enviando para análise...');
+        needle.request('post', URL_API_ML+ '?id_user=' + id_user, res, {
             json: true
         }, function (err, resp) {
             if (!err) {
-                console.log('send to api');
+               console.log('Esperando resposta...')
             }
-    
             if (err) {
                 console.log('neddle error');
             }
@@ -79,6 +76,7 @@ function getData(req, res, next) {
             next(err);
         } else {
             res.json({
+                'status': 'success',
                 'result': result
             });
         }

@@ -107,14 +107,8 @@ function getSingleUser(req, res) {
   });
 };
 
-
-function getData(req, res, next) {
-  // const number_request = request.getData();
-}
-
 module.exports = {
   getSingleUser: getSingleUser,
   createUser: createUser,
   login: login,
-  getData: getData
 };

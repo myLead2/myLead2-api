@@ -7,6 +7,8 @@ const enterpriseModel = require('./components/models/enterpriseModel');
 const enterpriseRoutets = require('./components/routes/enterpriseRoutes');
 const requestModel = require('./components/models/requestModel');
 const requestRoutes = require('./components/routes/requestRoutes');
+const resultModel = require('./components/models/resultModel');
+const resultRoutes = require('./components/routes/resultRoutes');
 
 const multer = require('multer');
 const cors = require('cors')
@@ -41,6 +43,8 @@ app.use(bodyParser.urlencoded({
 
 app.use('/', requestRoutes);
 app.use('/', enterpriseRoutets);
+app.use('/', resultRoutes);
+
 
 
 // catch 404 and forward to error handler
